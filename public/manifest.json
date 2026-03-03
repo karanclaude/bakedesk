@@ -1,0 +1,27 @@
+{
+  "name": "BakeDesk — AI Bakery Consultant",
+  "short_name": "BakeDesk",
+  "description": "Free AI business consultant for bakers, cafe owners, and food entrepreneurs",
+  "start_url": "/chat",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#6D2E46",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "food", "productivity"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-primary: #6D2E46;
+  --brand-secondary: #A26769;
+  --brand-accent: #ECE2D0;
+  --brand-bg: #FAF7F2;
+  --brand-dark: #2D1B2E;
+  --brand-muted: #8B7082;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--brand-secondary);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-primary);
+}
+
+/* Chat markdown styling */
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3 {
+  font-family: var(--font-playfair), serif;
+  color: var(--brand-primary);
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+.chat-markdown h1 { font-size: 1.25rem; font-weight: 700; }
+.chat-markdown h2 { font-size: 1.125rem; font-weight: 700; }
+.chat-markdown h3 { font-size: 1rem; font-weight: 600; }
+
+.chat-markdown p {
+  margin-bottom: 0.75em;
+  line-height: 1.7;
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  margin-left: 1.25em;
+  margin-bottom: 0.75em;
+}
+.chat-markdown li {
+  margin-bottom: 0.25em;
+  line-height: 1.6;
+}
+.chat-markdown ul { list-style-type: disc; }
+.chat-markdown ol { list-style-type: decimal; }
+
+.chat-markdown strong {
+  font-weight: 600;
+  color: var(--brand-primary);
+}
+
+.chat-markdown code {
+  background: var(--brand-accent);
+  padding: 0.125em 0.375em;
+  border-radius: 4px;
+  font-size: 0.875em;
+}
+
+.chat-markdown pre {
+  background: var(--brand-dark);
+  color: #f0e6d3;
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 0.75em;
+}
+.chat-markdown pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.chat-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.75em;
+  font-size: 0.875rem;
+}
+.chat-markdown th,
+.chat-markdown td {
+  border: 1px solid var(--brand-accent);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+.chat-markdown th {
+  background: var(--brand-accent);
+  font-weight: 600;
+  color: var(--brand-primary);
+}
+
+.chat-markdown blockquote {
+  border-left: 3px solid var(--brand-secondary);
+  padding-left: 1em;
+  color: var(--brand-muted);
+  margin-bottom: 0.75em;
+  font-style: italic;
+}
+
+/* Typing animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.typing-cursor::after {
+  content: '▊';
+  animation: blink 1s step-end infinite;
+  color: var(--brand-primary);
+  margin-left: 2px;
+}
+
+/* Bottom nav safe area */
+.pb-safe {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* PWA install banner */
+@media (display-mode: standalone) {
+  .pwa-install-banner {
+    display: none;
+  }
+}
