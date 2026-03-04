@@ -2,10 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useConversations } from '@/lib/hooks/useConversations';
+import { useAuthContext } from '@/components/providers/AuthProvider';
 
 export default function HistoryPage() {
   const router = useRouter();
-  const { conversations, deleteConversation } = useConversations();
+  const { isAuthenticated } = useAuthContext();
+  const { conversations, deleteConversation } = useConversations(isAuthenticated);
 
   const formatDate = (ts: number) => {
     const d = new Date(ts);

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 const FEATURES = [
@@ -40,7 +41,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-brand-bg/90 backdrop-blur-md border-b border-brand-accent">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🧁</span>
+            <Image src="/logo.svg" alt="BakeDesk" width={36} height={36} />
             <span className="font-heading text-xl font-bold text-brand-primary">
               BakeDesk
             </span>
@@ -159,7 +160,7 @@ export default function LandingPage() {
       <footer className="border-t border-brand-accent py-8">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-brand-muted">
           <div className="flex items-center gap-2">
-            <span>🧁</span>
+            <Image src="/logo.svg" alt="BakeDesk" width={24} height={24} />
             <span className="font-heading font-bold text-brand-primary">
               BakeDesk
             </span>

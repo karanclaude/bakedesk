@@ -6,7 +6,7 @@ import { STORAGE_KEYS } from '@/lib/constants';
 
 const MAX_CONVERSATIONS = 50;
 
-function loadConversations(): Conversation[] {
+function loadLocalConversations(): Conversation[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEYS.CONVERSATIONS);
     return stored ? JSON.parse(stored) : [];
@@ -15,7 +15,7 @@ function loadConversations(): Conversation[] {
   }
 }
 
-function saveConversations(conversations: Conversation[]) {
+function saveLocalConversations(conversations: Conversation[]) {
   try {
     localStorage.setItem(
       STORAGE_KEYS.CONVERSATIONS,
@@ -31,31 +31,45 @@ function generateTitle(messages: Message[]): string {
   return text.length < firstUser.content.length ? text + '...' : text;
 }
 
-export function useConversations() {
+export function useConversations(isAuthenticated?: boolean) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setConversations(loadConversations());
-    setLoaded(true);
-  }, []);
+    if (isAuthenticated) {
+      fetch('/api/conversations')
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.conversations?.length) {
+            setConversations(data.conversations);
+            saveLocalConversations(data.conversations);
+          } else {
+            setConversations(loadLocalConversations());
+          }
+        })
+        .catch(() => setConversations(loadLocalConversations()))
+        .finally(() => setLoaded(true));
+    } else {
+      setConversations(loadLocalConversations());
+      setLoaded(true);
+    }
+  }, [isAuthenticated]);
 
   const saveConversation = useCallback(
     (id: string, messages: Message[]) => {
       setConversations((prev) => {
+        const title = generateTitle(messages);
         const existing = prev.find((c) => c.id === id);
         let next: Conversation[];
 
         if (existing) {
           next = prev.map((c) =>
-            c.id === id
-              ? { ...c, messages, title: generateTitle(messages), updatedAt: Date.now() }
-              : c
+            c.id === id ? { ...c, messages, title, updatedAt: Date.now() } : c
           );
         } else {
           const newConv: Conversation = {
             id,
-            title: generateTitle(messages),
+            title,
             messages,
             createdAt: Date.now(),
             updatedAt: Date.now(),
@@ -64,20 +78,36 @@ export function useConversations() {
         }
 
         next.sort((a, b) => b.updatedAt - a.updatedAt);
-        saveConversations(next);
+        saveLocalConversations(next);
+
+        if (isAuthenticated) {
+          fetch('/api/conversations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, title, messages }),
+          }).catch(() => {});
+        }
+
         return next;
       });
     },
-    []
+    [isAuthenticated]
   );
 
-  const deleteConversation = useCallback((id: string) => {
-    setConversations((prev) => {
-      const next = prev.filter((c) => c.id !== id);
-      saveConversations(next);
-      return next;
-    });
-  }, []);
+  const deleteConversation = useCallback(
+    (id: string) => {
+      setConversations((prev) => {
+        const next = prev.filter((c) => c.id !== id);
+        saveLocalConversations(next);
+        return next;
+      });
+
+      if (isAuthenticated) {
+        fetch(`/api/conversations/${id}`, { method: 'DELETE' }).catch(() => {});
+      }
+    },
+    [isAuthenticated]
+  );
 
   const getConversation = useCallback(
     (id: string): Conversation | undefined => {

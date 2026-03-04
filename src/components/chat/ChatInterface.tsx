@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useChat } from '@/lib/hooks/useChat';
 import { useConversations } from '@/lib/hooks/useConversations';
 import { usePreferences } from '@/lib/hooks/usePreferences';
+import { useAuthContext } from '@/components/providers/AuthProvider';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 
@@ -12,10 +13,11 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({ conversationId }: ChatInterfaceProps) {
-  const { preferences } = usePreferences();
+  const { isAuthenticated } = useAuthContext();
+  const { preferences } = usePreferences(isAuthenticated);
   const { messages, isLoading, sendMessage, stopGenerating, resetChat, loadMessages } =
     useChat(preferences);
-  const { saveConversation, getConversation } = useConversations();
+  const { saveConversation, getConversation } = useConversations(isAuthenticated);
   const scrollRef = useRef<HTMLDivElement>(null);
   const idRef = useRef(
     conversationId || `conv_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`

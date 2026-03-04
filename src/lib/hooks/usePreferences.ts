@@ -12,29 +12,60 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   stage: '',
 };
 
-export function usePreferences() {
+export function usePreferences(isAuthenticated?: boolean) {
   const [preferences, setPreferencesState] = useState<UserPreferences>(DEFAULT_PREFERENCES);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    // Load from localStorage first
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PREFERENCES);
       if (stored) {
         setPreferencesState({ ...DEFAULT_PREFERENCES, ...JSON.parse(stored) });
       }
     } catch {}
-    setLoaded(true);
-  }, []);
 
-  const setPreferences = useCallback((update: Partial<UserPreferences>) => {
-    setPreferencesState((prev) => {
-      const next = { ...prev, ...update };
-      try {
-        localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(next));
-      } catch {}
-      return next;
-    });
-  }, []);
+    // Then overlay from DB if authenticated
+    if (isAuthenticated) {
+      fetch('/api/preferences')
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.preferences) {
+            const merged = { ...DEFAULT_PREFERENCES, ...data.preferences };
+            setPreferencesState(merged);
+            try {
+              localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(merged));
+            } catch {}
+          }
+        })
+        .catch(() => {})
+        .finally(() => setLoaded(true));
+    } else {
+      setLoaded(true);
+    }
+  }, [isAuthenticated]);
+
+  const setPreferences = useCallback(
+    (update: Partial<UserPreferences>) => {
+      setPreferencesState((prev) => {
+        const next = { ...prev, ...update };
+        try {
+          localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(next));
+        } catch {}
+
+        if (isAuthenticated) {
+          fetch('/api/preferences', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(next),
+          }).catch(() => {});
+        }
+
+        return next;
+      });
+    },
+    [isAuthenticated]
+  );
 
   const resetPreferences = useCallback(() => {
     setPreferencesState(DEFAULT_PREFERENCES);

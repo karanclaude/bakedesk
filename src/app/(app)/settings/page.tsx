@@ -1,11 +1,13 @@
 'use client';
 
 import { usePreferences } from '@/lib/hooks/usePreferences';
+import { useAuthContext } from '@/components/providers/AuthProvider';
 import { BUSINESS_TYPES, BUSINESS_STAGES, CURRENCIES } from '@/types';
 import { APP_NAME } from '@/lib/constants';
 
 export default function SettingsPage() {
-  const { preferences, setPreferences } = usePreferences();
+  const { isAuthenticated, user } = useAuthContext();
+  const { preferences, setPreferences } = usePreferences(isAuthenticated);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
@@ -97,22 +99,36 @@ export default function SettingsPage() {
           </div>
         </section>
 
+        {/* Account */}
+        {isAuthenticated && user && (
+          <section className="bg-white rounded-xl border border-brand-accent p-5">
+            <h2 className="font-heading text-base font-bold text-brand-dark mb-3">Account</h2>
+            <div className="space-y-1 text-sm text-brand-muted">
+              <p>Signed in as <strong className="text-brand-dark">{user.email}</strong></p>
+              {user.name && <p>Name: {user.name}</p>}
+              <p className="text-xs text-green-600 mt-2">Your data syncs to the server automatically.</p>
+            </div>
+          </section>
+        )}
+
         {/* Data */}
         <section className="bg-white rounded-xl border border-brand-accent p-5">
           <h2 className="font-heading text-base font-bold text-brand-dark mb-3">Data</h2>
           <p className="text-xs text-brand-muted mb-3">
-            All data is stored locally on your device. Clearing data will remove all conversations and preferences.
+            {isAuthenticated
+              ? 'Your data is synced to the server and also cached locally.'
+              : 'All data is stored locally on your device. Sign in to sync across devices.'}
           </p>
           <button
             onClick={() => {
-              if (confirm('This will delete all your conversations and preferences. Are you sure?')) {
+              if (confirm('This will delete all your local conversations and preferences. Are you sure?')) {
                 localStorage.clear();
                 window.location.reload();
               }
             }}
             className="px-4 py-2 rounded-lg border border-danger text-danger text-sm font-medium hover:bg-danger/5 transition-colors"
           >
-            Clear All Data
+            Clear Local Data
           </button>
         </section>
       </div>

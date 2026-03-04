@@ -40,8 +40,10 @@ next-env.d.ts
 # database (for future SQLite)
 *.db
 *.sqlite
-prisma/migrations/
+# prisma/migrations/ — keep migrations in git for deployment
 
 # IDE
 .vscode/
 .idea/
+
+/src/generated/prisma
